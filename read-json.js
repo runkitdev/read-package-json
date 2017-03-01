@@ -332,8 +332,16 @@ function checkBinReferences_ (file, data, warn, cb) {
   keys.forEach(function (key) {
     var dirName = path.dirname(file)
     var relName = data.bin[key]
-    var binPath = path.resolve(dirName, relName)
-    fs.exists(binPath, handleExists.bind(null, relName))
+    try {
+      var binPath = path.resolve(dirName, relName)
+      fs.exists(binPath, handleExists.bind(null, relName))
+    } catch (ex) {
+      if (ex instanceof TypeError) {
+        handleExists(relName, false)
+      } else {
+        throw ex
+      }
+    }
   })
 }
 
